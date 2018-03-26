@@ -70,6 +70,7 @@ static unsigned  n_parent_nodes;
       fprintf(stderr, "hwloc obj %s has no children\n", root_str);
       goto lib_err_with_topology;
     }
+	root->cpuset = cpuset_f;	//nikela
   }
 
   /* bind future threads to root */
