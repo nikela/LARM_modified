@@ -53,7 +53,8 @@ static unsigned  n_parent_nodes;
   /* Get first node and number of threads */
   if(threads_location == NULL){root = hwloc_get_obj_by_type(topology, HWLOC_OBJ_NUMANODE, 0);}
   else{
-    root = roofline_hwloc_parse_obj(threads_location);
+    root = roofline_hwloc_parse_obj(threads_location);		//nikela: The problem here is that the function needs to return a "root" object
+	//need to restrict topology - do this inside roofline_hwloc_parse_obj?  hwloc_topology_restrict
     if(root == NULL){goto lib_err_with_topology;}
     if(root->arity == 0){
       roofline_mkstr(root_str, 32);

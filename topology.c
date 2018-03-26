@@ -291,7 +291,50 @@ inline int roofline_hwloc_objtype_is_cache(const hwloc_obj_type_t type){
   return type==HWLOC_OBJ_L1CACHE || type==HWLOC_OBJ_L2CACHE || type==HWLOC_OBJ_L3CACHE || type==HWLOC_OBJ_L4CACHE || type==HWLOC_OBJ_L5CACHE;
 }
 
-hwloc_obj_t roofline_hwloc_parse_obj(const char* arg){
+
+//nikela: Get cpuset to filter topology
+hwloc_cpuset_t roofline_hwloc_thread_location_cpuset(const char* arg) {
+	char * name;
+	int err, depth;
+	char * idxs;
+	char * idx;
+	int logical_index;
+	hwloc_obj_t root_obj, obj;
+	hwloc_cpuset_t cpuset_f = hwloc_bitmap_alloc();
+
+	char * dup_arg = strdup(arg);
+
+	name = strtok(dup_arg,":");
+	if (name==NULL) goto err_parse_obj;
+	if (!strcmp(name, "Node")) return cpuset_f;
+
+	err = hwloc_type_sscanf_as_depth(name, &type, topology, &depth);
+	if(err == HWLOC_TYPE_DEPTH_UNKNOWN){
+		fprintf(stderr,"type %s cannot be found, level=%d\n",name,depth);
+		goto err_parse_obj;
+	}
+	if(depth == HWLOC_TYPE_DEPTH_MULTIPLE){
+		fprintf(stderr,"type %s multiple caches match for\n",name);
+		goto err_parse_obj;
+	}
+
+	idxs = strtok(NULL, ":");
+	idx = strtok(idxs, ",");
+	while (idx != NULL) {
+		logical_idx = atoi(idx);
+		obj = hwloc_get_obj_by_depth(topology, depth, logical_index);				
+		hwloc_bitmap_or(cpuset_f, cpuset_f, obj->cpuset);
+		//get next token
+		idx = strtok(NULL, ",");
+	}
+
+err_parse_obj:
+	free(dup_arg);
+
+	return cpuset_f;
+}
+
+hwloc_obj_t roofline_hwloc_parse_obj(const char* arg){ //nikela: Need to write a wrapper for this function to parse more than one objects to allow for e.g. Node:0-1
   hwloc_obj_type_t type; 
   char * name;
   int err, depth; 

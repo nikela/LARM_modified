@@ -14,6 +14,8 @@ void        roofline_hwloc_check_version();
 int         roofline_hwloc_objtype_is_cache(const hwloc_obj_type_t type);
 int         roofline_hwloc_obj_snprintf(const hwloc_obj_t obj, char * info_in, const size_t n);
 hwloc_obj_t roofline_hwloc_parse_obj(const char*);
+hwloc_cpuset_t roofline_hwloc_thread_location_cpuset(const char* arg); //nikela: returns cpuset for range of nodes
+
 /* CPU binding */
 hwloc_obj_t roofline_hwloc_cpubind(const hwloc_obj_type_t);
 hwloc_obj_t roofline_hwloc_get_cpubind();

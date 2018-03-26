@@ -72,6 +72,11 @@ uninstall:
 	rm $(PREFIX)/include/sampling.h $(PREFIX)/lib/$(LIB) $(PREFIX)/bin/$(BIN)
 
 clean:
+	rm -f *.o *.s *.so 
+	make -C MSC/$(MSC) clean
+
+distclean:
 	rm -f *.o *.s *.so roofline
 	make -C MSC/$(MSC) clean
+
 
