@@ -278,9 +278,9 @@ hwloc_obj_t roofline_hwloc_set_area_membind(const hwloc_obj_t membind_location, 
   }
   
   memset(ptr, 0, size);
-#ifdef DEBUG2
+//#ifdef DEBUG2			//nikela
   roofline_check_area_membind(membind_location, roofline_hwloc_get_area_membind(ptr, size));
-#endif
+//#endif				//nikela
 
 exit_alloc:
   hwloc_bitmap_free(nodeset);

@@ -27,7 +27,7 @@ static void usage(char * argv0){
   printf("-t, --type  <\"LOAD|LOAD_NT|STORE|STORE_NT|2LD1ST|MUL|ADD|MAD\">: choose the roofline types among load, load_nt, store, store_nt, or 2loads/1store for memory, add, mul, and fma for fpeak.\n\t");
   printf("-m, --memory <hwloc_obj:id|hwloc_obj:id|...>: benchmark a single memory level.\n\t");
   printf("--CARM: Build the Cache Aware Roofline Model.\n\t");
-  printf("-s, --src <hwloc_ibj:idx>: Build the model with threads at leaves of src obj. Default is Node:0.\n\t");
+  printf("-s, --src <hwloc_ibj:idx>|<hwloc_obj:idx1,idx2,idx3...>: Build the model with threads at leaves of src obj. Default is Node:0.\n\t");
   printf("-mat, --matrix: Benchmark bandwidth matrix at --src level.\n\t");
   printf("-o, --output <output>: Set output file to write results.\n\t");
   printf("-p, --policy <policy>: Set the allocation policy when target memory scope more than one node:.\n\t\t");
@@ -77,7 +77,8 @@ static void parse_args(int argc, char ** argv){
     else if(!strcmp(argv[i],"--CARM")){
       hyperthreading = 0;
       roofline_types = ROOFLINE_MAD|ROOFLINE_2LD1ST;
-      thread_location = "Machine:0";
+	  /*TODO: BUGFIX*/
+//      thread_location = "Machine:0";			//nikela - commented this out to support multiple nodes and cpuset - still there is a bug
     }
     else if(!strcmp(argv[i],"--matrix") || !strcmp(argv[i],"-mat")){
       matrix = 1;
@@ -143,7 +144,7 @@ int main(int argc, char * argv[]){
   if(roofline_lib_init(NULL, thread_location, hyperthreading, policy)==-1)
     ERR_EXIT("roofline library init failure\n");
 
-  if(mem_str != NULL){
+  if(mem_str != NULL){				//nikela - this is where memory is defined
     char * save_ptr;
     char * item = strtok_r(mem_str, "|", &save_ptr);    
     mem = malloc(sizeof(hwloc_obj_t)*hwloc_get_type_depth(topology, HWLOC_OBJ_PU));
@@ -168,7 +169,7 @@ int main(int argc, char * argv[]){
   /* Benchmark matrix */
   if(matrix){
     hwloc_obj_t dst = NULL;
-    hwloc_obj_t src = roofline_hwloc_parse_obj(thread_location);
+    hwloc_obj_t src = roofline_hwloc_parse_obj(thread_location); 
     if(src == NULL) {
       fprintf(stderr,"Provided source location %s does not match any object in topology\n", thread_location);
       goto exit;
