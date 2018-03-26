@@ -294,11 +294,12 @@ inline int roofline_hwloc_objtype_is_cache(const hwloc_obj_type_t type){
 
 //nikela: Get cpuset to filter topology
 hwloc_cpuset_t roofline_hwloc_thread_location_cpuset(const char* arg) {
+  	hwloc_obj_type_t type; 
 	char * name;
 	int err, depth;
 	char * idxs;
 	char * idx;
-	int logical_index;
+	int logical_idx;
 	hwloc_obj_t root_obj, obj;
 	hwloc_cpuset_t cpuset_f = hwloc_bitmap_alloc();
 
@@ -306,7 +307,7 @@ hwloc_cpuset_t roofline_hwloc_thread_location_cpuset(const char* arg) {
 
 	name = strtok(dup_arg,":");
 	if (name==NULL) goto err_parse_obj;
-	if (!strcmp(name, "Node")) return cpuset_f;
+	if (strcmp(name, "Node")) return cpuset_f;
 
 	err = hwloc_type_sscanf_as_depth(name, &type, topology, &depth);
 	if(err == HWLOC_TYPE_DEPTH_UNKNOWN){
@@ -322,12 +323,13 @@ hwloc_cpuset_t roofline_hwloc_thread_location_cpuset(const char* arg) {
 	idx = strtok(idxs, ",");
 	while (idx != NULL) {
 		logical_idx = atoi(idx);
-		obj = hwloc_get_obj_by_depth(topology, depth, logical_index);				
+		obj = hwloc_get_obj_by_depth(topology, depth, logical_idx);				
 		hwloc_bitmap_or(cpuset_f, cpuset_f, obj->cpuset);
 		//get next token
 		idx = strtok(NULL, ",");
 	}
-
+	char * bitmapstr;
+	printf("Bitmap %s\n", bitmapstr);
 err_parse_obj:
 	free(dup_arg);
 

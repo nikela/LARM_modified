@@ -56,7 +56,7 @@ static unsigned  n_parent_nodes;
   if(threads_location == NULL){root = hwloc_get_obj_by_type(topology, HWLOC_OBJ_NUMANODE, 0);}
   else{
 
-	cpuset_f = hwloc_cpuset_t roofline_hwloc_thread_location_cpuset(threads_location); //nikela: returns cpuset for range of nodes
+	cpuset_f = roofline_hwloc_thread_location_cpuset(threads_location); //nikela: returns cpuset for range of nodes
 	if (!hwloc_bitmap_iszero(cpuset_f)) {												//nikela: restrict topology
 		hwloc_topology_restrict(topology, cpuset_f, HWLOC_RESTRICT_FLAG_REMOVE_CPULESS | HWLOC_RESTRICT_FLAG_ADAPT_MISC);
 	}
