@@ -78,7 +78,7 @@ static void parse_args(int argc, char ** argv){
       hyperthreading = 0;
       roofline_types = ROOFLINE_MAD|ROOFLINE_2LD1ST;
 	  /*TODO: BUGFIX*/
-//      thread_location = "Machine:0";			//nikela - commented this out to support multiple nodes and cpuset - still there is a bug
+      thread_location = "Machine:0";			//nikela - commented this out to support multiple nodes and cpuset - still there is a bug
     }
     else if(!strcmp(argv[i],"--matrix") || !strcmp(argv[i],"-mat")){
       matrix = 1;
@@ -148,10 +148,12 @@ int main(int argc, char * argv[]){
     char * save_ptr;
     char * item = strtok_r(mem_str, "|", &save_ptr);    
     mem = malloc(sizeof(hwloc_obj_t)*hwloc_get_type_depth(topology, HWLOC_OBJ_PU));
+	printf("%d\n", hwloc_get_type_depth(topology, HWLOC_OBJ_PU));
     while(item != NULL){
       mem[n_mem] = roofline_hwloc_parse_obj(item);
       if(mem[n_mem] != NULL && roofline_hwloc_obj_is_memory(mem[n_mem])){n_mem++;}
       item = strtok_r(NULL, "|", &save_ptr);
+
     }
   }
 

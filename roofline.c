@@ -70,9 +70,12 @@ static unsigned  n_parent_nodes;
       fprintf(stderr, "hwloc obj %s has no children\n", root_str);
       goto lib_err_with_topology;
     }
-	root->cpuset = cpuset_f;	//nikela
-	hwloc_cpuset_to_nodeset(topology, cpuset_f, root->nodeset); //nikela
-//	printf("memory arity %d\n", root->memory_arity); //nikela
+
+	if (!hwloc_bitmap_iszero(cpuset_f)) {												//nikela: restrict topology
+
+		root->cpuset = cpuset_f;	//nikela
+		hwloc_cpuset_to_nodeset(topology, cpuset_f, root->nodeset); //nikela
+	}
   }
 
   /* bind future threads to root */

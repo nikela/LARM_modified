@@ -278,9 +278,9 @@ hwloc_obj_t roofline_hwloc_set_area_membind(const hwloc_obj_t membind_location, 
   }
   
   memset(ptr, 0, size);
-//#ifdef DEBUG2			//nikela
+#ifdef DEBUG2			
   roofline_check_area_membind(membind_location, roofline_hwloc_get_area_membind(ptr, size));
-//#endif				//nikela
+#endif				
 
 exit_alloc:
   hwloc_bitmap_free(nodeset);
@@ -307,7 +307,10 @@ hwloc_cpuset_t roofline_hwloc_thread_location_cpuset(const char* arg) {
 
 	name = strtok(dup_arg,":");
 	if (name==NULL) goto err_parse_obj;
-	if (strcmp(name, "Node")) return cpuset_f;
+	if (strcmp(name, "Node") || strcmp(name, "NUMANode")) {
+		printf("Node not found\n");
+		goto err_parse_obj;
+	}
 
 	err = hwloc_type_sscanf_as_depth(name, &type, topology, &depth);
 	if(err == HWLOC_TYPE_DEPTH_UNKNOWN){
@@ -332,7 +335,7 @@ hwloc_cpuset_t roofline_hwloc_thread_location_cpuset(const char* arg) {
 	printf("Bitmap %s\n", bitmapstr);
 err_parse_obj:
 	free(dup_arg);
-
+	hwloc_bitmap_clr_range(cpuset_f, 0, -1);
 	return cpuset_f;
 }
 
