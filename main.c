@@ -78,7 +78,7 @@ static void parse_args(int argc, char ** argv){
       hyperthreading = 0;
       roofline_types = ROOFLINE_MAD|ROOFLINE_2LD1ST;
 	  /*TODO: BUGFIX*/
-      thread_location = "Machine:0";			//nikela - commented this out to support multiple nodes and cpuset - still there is a bug
+//      thread_location = "Machine:0";			//nikela - commented this out to support multiple nodes and cpuset - still there is a bug
     }
     else if(!strcmp(argv[i],"--matrix") || !strcmp(argv[i],"-mat")){
       matrix = 1;

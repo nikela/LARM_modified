@@ -57,9 +57,11 @@ static unsigned  n_parent_nodes;
   else{
 
 	cpuset_f = roofline_hwloc_thread_location_cpuset(threads_location); //nikela: returns cpuset for range of nodes
+
 	if (!hwloc_bitmap_iszero(cpuset_f)) {												//nikela: restrict topology
 		hwloc_topology_restrict(topology, cpuset_f, HWLOC_RESTRICT_FLAG_REMOVE_CPULESS | HWLOC_RESTRICT_FLAG_ADAPT_MISC);
 	}
+	
 
     root = roofline_hwloc_parse_obj(threads_location);		//nikela: The problem here is that the function needs to return a "root" object
 	//need to restrict topology - do this inside roofline_hwloc_parse_obj?  hwloc_topology_restrict
@@ -70,9 +72,7 @@ static unsigned  n_parent_nodes;
       fprintf(stderr, "hwloc obj %s has no children\n", root_str);
       goto lib_err_with_topology;
     }
-
-	if (!hwloc_bitmap_iszero(cpuset_f)) {												//nikela: restrict topology
-
+	if (!hwloc_bitmap_iszero(cpuset_f)) {
 		root->cpuset = cpuset_f;	//nikela
 		hwloc_cpuset_to_nodeset(topology, cpuset_f, root->nodeset); //nikela
 	}

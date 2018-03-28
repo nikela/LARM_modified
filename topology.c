@@ -302,23 +302,26 @@ hwloc_cpuset_t roofline_hwloc_thread_location_cpuset(const char* arg) {
 	int logical_idx;
 	hwloc_obj_t root_obj, obj;
 	hwloc_cpuset_t cpuset_f = hwloc_bitmap_alloc();
+	hwloc_bitmap_clr_range(cpuset_f, 0, -1);
 
 	char * dup_arg = strdup(arg);
 
 	name = strtok(dup_arg,":");
 	if (name==NULL) goto err_parse_obj;
-	if (strcmp(name, "Node") || strcmp(name, "NUMANode")) {
-		printf("Node not found\n");
+	if (!strcmp(name, "Machine")) {
+		hwloc_bitmap_clr_range(cpuset_f, 0, -1);
 		goto err_parse_obj;
 	}
 
 	err = hwloc_type_sscanf_as_depth(name, &type, topology, &depth);
 	if(err == HWLOC_TYPE_DEPTH_UNKNOWN){
 		fprintf(stderr,"type %s cannot be found, level=%d\n",name,depth);
+		hwloc_bitmap_clr_range(cpuset_f, 0, -1);
 		goto err_parse_obj;
 	}
 	if(depth == HWLOC_TYPE_DEPTH_MULTIPLE){
 		fprintf(stderr,"type %s multiple caches match for\n",name);
+		hwloc_bitmap_clr_range(cpuset_f, 0, -1);
 		goto err_parse_obj;
 	}
 
@@ -331,11 +334,8 @@ hwloc_cpuset_t roofline_hwloc_thread_location_cpuset(const char* arg) {
 		//get next token
 		idx = strtok(NULL, ",");
 	}
-	char * bitmapstr;
-	printf("Bitmap %s\n", bitmapstr);
 err_parse_obj:
 	free(dup_arg);
-	hwloc_bitmap_clr_range(cpuset_f, 0, -1);
 	return cpuset_f;
 }
 
